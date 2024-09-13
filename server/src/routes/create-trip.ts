@@ -1,8 +1,15 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import dayjs from 'dayjs'
+import nodemailer from 'nodemailer'
 import { z } from 'zod'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { prisma } from '../lib/prisma'
+import { getMailClient } from '../lib/mail'
+
+dayjs.locale('pt-br')
+dayjs.extend(localizedFormat)
 
 export async function createTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -15,6 +22,7 @@ export async function createTrip(app: FastifyInstance) {
           ends_at: z.coerce.date(),
           owner_name: z.string(),
           owner_email: z.string().email(),
+          emails_to_invite: z.array(z.string().email()),
         }),
       },
     },
@@ -25,6 +33,7 @@ export async function createTrip(app: FastifyInstance) {
         ends_at: endsAt,
         owner_name: ownerName,
         owner_email: ownerEmail,
+        emails_to_invite: emailsToInvite,
       } = request.body
 
       if (dayjs(startsAt).isBefore(new Date())) {
@@ -42,15 +51,56 @@ export async function createTrip(app: FastifyInstance) {
           ends_at: endsAt,
 
           participants: {
-            create: {
-              name: ownerName,
-              email: ownerEmail,
-              is_owner: true,
-              is_confirmed: true,
+            createMany: {
+              data: [
+                {
+                  name: ownerName,
+                  email: ownerEmail,
+                  is_owner: true,
+                  is_confirmed: true,
+                },
+                ...emailsToInvite.map(email => {
+                  return { email }
+                }),
+              ],
             },
           },
         },
       })
+
+      const formattedStartDate = dayjs(startsAt).format('LL')
+      const formattedEndDate = dayjs(endsAt).format('LL')
+
+      const confirmationLink = `http://localhost:3333/trips/${trip.id}/confirm`
+
+      const mail = await getMailClient()
+
+      const message = await mail.sendMail({
+        from: {
+          name: 'Equipe plann.er',
+          address: 'oi@plann.er',
+        },
+        to: {
+          name: ownerName,
+          address: ownerEmail,
+        },
+        subject: `Confirme sua viagem para ${destination} em ${formattedStartDate}`,
+        html: `
+          <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
+            <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas de <strong>${formattedStartDate}</strong> até <strong>${formattedEndDate}</strong>.</p>
+            <p></p>
+            <p>Para confirmar sua viagem, clique no link abaixo:</p>
+            <p></p>
+            <p>
+              <a href="${confirmationLink}">Confirmar viagem</a>
+            </p>
+            <p></p>
+            <p>Caso você não saiba do que se trata esse e-mail, apenas ignore esse e-mail.</p>
+          </div>
+        `.trim(),
+      })
+
+      console.log(nodemailer.getTestMessageUrl(message))
 
       return { trip_id: trip.id }
     }
