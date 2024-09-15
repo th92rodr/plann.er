@@ -1,5 +1,6 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
+import type { DateRange } from 'react-day-picker'
 import { useNavigate } from 'react-router-dom'
 
 import { FooterComponent } from './components/footer-component'
@@ -16,6 +17,10 @@ export function CreateTripPage() {
   const [isGuestsModalOpen, setIsGuestsModalOpen] = useState(false)
   const [isConfirmTripModalOpen, setIsConfirmTripModalOpen] = useState(false)
 
+  const [destination, setDestination] = useState('')
+  const [ownerName, setOwnerName] = useState('')
+  const [ownerEmail, setOwnerEmail] = useState('')
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [emailsToInvite, setEmailsToInvite] = useState([''])
 
   function openGuestsInput() {
@@ -80,8 +85,11 @@ export function CreateTripPage() {
         <div className="space-y-4">
           <DestinationAndDateStep
             isGuestsInputOpen={isGuestsInputOpen}
+            dateRange={dateRange}
             openGuestsInput={openGuestsInput}
             closeGuestsInput={closeGuestsInput}
+            setDestination={setDestination}
+            setDateRange={setDateRange}
           />
 
           {isGuestsInputOpen && (
@@ -106,7 +114,12 @@ export function CreateTripPage() {
       )}
 
       {isConfirmTripModalOpen && (
-        <ConfirmTripModal closeConfirmTripModal={closeConfirmTripModal} createTrip={createTrip} />
+        <ConfirmTripModal
+          closeConfirmTripModal={closeConfirmTripModal}
+          setOwnerName={setOwnerName}
+          setOwnerEmail={setOwnerEmail}
+          createTrip={createTrip}
+        />
       )}
     </div>
   )
