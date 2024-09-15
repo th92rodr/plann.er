@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ArrowRight, Calendar, MapPin, Settings2, X } from 'lucide-react'
 import { useState } from 'react'
@@ -7,6 +6,7 @@ import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 
 import { Button } from '../../../components/button'
+import { formatDateRangeWithAbbreviatedMonth } from '../../../lib/date'
 
 interface DestinationAndDateStepProps {
   isGuestsInputOpen: boolean
@@ -37,9 +37,7 @@ export function DestinationAndDateStep({
 
   const formattedDateRange =
     dateRange?.from && dateRange?.to
-      ? format(dateRange.from, "d' de 'LLL")
-          .concat(' até ')
-          .concat(format(dateRange.to, "d' de 'LLL"))
+      ? formatDateRangeWithAbbreviatedMonth(dateRange.from, dateRange.to)
       : null
 
   return (
@@ -70,7 +68,7 @@ export function DestinationAndDateStep({
           <div className="rounded-xl py-5 px-6 shadow-shape bg-zinc-900 space-y-5">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Selecione a data</h2>
+                <h2 className="text-lg font-semibold">Selecione as datas</h2>
                 <button type="button" onClick={closeDatePicker}>
                   <X className="size-5 text-zinc-400" />
                 </button>
