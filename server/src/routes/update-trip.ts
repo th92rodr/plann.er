@@ -15,7 +15,7 @@ export async function updateTrip(app: FastifyInstance) {
           tripId: z.string().uuid(),
         }),
         body: z.object({
-          destination: z.string().min(4),
+          destination: z.string().min(1),
           starts_at: z.coerce.date(),
           ends_at: z.coerce.date(),
         }),
