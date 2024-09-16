@@ -15,7 +15,7 @@ export async function createTrip(app: FastifyInstance) {
     {
       schema: {
         body: z.object({
-          destination: z.string().min(4),
+          destination: z.string().min(1),
           starts_at: z.coerce.date(),
           ends_at: z.coerce.date(),
           owner_name: z.string(),

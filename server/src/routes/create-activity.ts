@@ -15,7 +15,7 @@ export async function createActivity(app: FastifyInstance) {
           tripId: z.string().uuid(),
         }),
         body: z.object({
-          title: z.string().min(4),
+          title: z.string().min(1),
           occurs_at: z.coerce.date(),
         }),
       },

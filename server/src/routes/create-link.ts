@@ -14,7 +14,7 @@ export async function createLink(app: FastifyInstance) {
           tripId: z.string().uuid(),
         }),
         body: z.object({
-          title: z.string().min(4),
+          title: z.string().min(1),
           url: z.string().url(),
         }),
       },
