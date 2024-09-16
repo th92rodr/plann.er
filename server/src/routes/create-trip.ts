@@ -42,11 +42,14 @@ export async function createTrip(app: FastifyInstance) {
         throw new ClientError('Invalid trip end date.')
       }
 
+      const firstMinOfFirstDay = dayjs(startsAt).startOf('day').toDate()
+      const lastMinOfLastDay = dayjs(endsAt).endOf('day').toDate()
+
       const trip = await prisma.trip.create({
         data: {
           destination,
-          starts_at: startsAt,
-          ends_at: endsAt,
+          starts_at: firstMinOfFirstDay,
+          ends_at: lastMinOfLastDay,
 
           participants: {
             createMany: {
