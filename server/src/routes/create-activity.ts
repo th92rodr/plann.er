@@ -40,7 +40,7 @@ export async function createActivity(app: FastifyInstance) {
         data: { title, occurs_at: occursAt, trip_id: tripId },
       })
 
-      return { activityId: activity.id }
+      return { activity_id: activity.id }
     }
   )
 }
