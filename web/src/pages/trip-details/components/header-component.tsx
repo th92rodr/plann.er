@@ -1,27 +1,14 @@
 import { Calendar, MapPin, Settings2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
 
 import { Button } from '../../../components/button'
-import { api } from '../../../lib/axios'
 import { formatDateRangeWithAbbreviatedMonth } from '../../../lib/date'
+import type { Trip } from '../index'
 
-interface Trip {
-  id: string
-  destination: string
-  starts_at: string
-  ends_at: string
-  is_confirmed: boolean
+interface HeaderComponentProps {
+  trip: Trip | undefined
 }
 
-export function HeaderComponent() {
-  const { tripId } = useParams()
-  const [trip, setTrip] = useState<Trip | undefined>()
-
-  useEffect(() => {
-    api.get(`/trips/${tripId}`).then(response => setTrip(response.data.trip))
-  }, [tripId])
-
+export function HeaderComponent({ trip }: HeaderComponentProps) {
   const formattedDateRange = trip
     ? formatDateRangeWithAbbreviatedMonth(trip.starts_at, trip.ends_at)
     : null

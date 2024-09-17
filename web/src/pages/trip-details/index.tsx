@@ -1,14 +1,31 @@
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { api } from './../../lib/axios'
 import { ActivitiesComponent } from './components/activities-component'
 import { GuestsComponent } from './components/guests-component'
 import { HeaderComponent } from './components/header-component'
 import { LinksComponent } from './components/links-component'
 import { CreateActivityModal } from './modals/create-activity-modal'
 
+export interface Trip {
+  id: string
+  destination: string
+  starts_at: string
+  ends_at: string
+  is_confirmed: boolean
+}
+
 export function TripDetailsPage() {
+  const { tripId } = useParams()
+
+  const [trip, setTrip] = useState<Trip | undefined>()
   const [isCreateActivityModalOpen, setIsCreateActivityModalOpen] = useState(false)
+
+  useEffect(() => {
+    api.get(`/trips/${tripId}`).then(response => setTrip(response.data.trip))
+  }, [tripId])
 
   function openCreateActivityModal() {
     setIsCreateActivityModalOpen(true)
@@ -20,7 +37,7 @@ export function TripDetailsPage() {
 
   return (
     <div className="max-w-6xl px-6 py-10 mx-auto space-y-8">
-      <HeaderComponent />
+      <HeaderComponent trip={trip} />
 
       <main className="flex gap-16 px-4">
         <div className="flex-1 space-y-6">
@@ -47,7 +64,7 @@ export function TripDetailsPage() {
       </main>
 
       {isCreateActivityModalOpen && (
-        <CreateActivityModal closeCreateActivityModal={closeCreateActivityModal} />
+        <CreateActivityModal trip={trip} closeCreateActivityModal={closeCreateActivityModal} />
       )}
     </div>
   )
