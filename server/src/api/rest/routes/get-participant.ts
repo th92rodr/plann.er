@@ -2,8 +2,8 @@ import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { ClientError } from '../errors/client-error'
-import { prisma } from '../lib/prisma'
+import { db } from '@/database/prisma'
+import { ClientError } from '@/errors/client-error'
 
 export async function getParticipant(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -18,7 +18,7 @@ export async function getParticipant(app: FastifyInstance) {
     async request => {
       const { participantId } = request.params
 
-      const participant = await prisma.participant.findUnique({
+      const participant = await db.participant.findUnique({
         select: {
           id: true,
           name: true,

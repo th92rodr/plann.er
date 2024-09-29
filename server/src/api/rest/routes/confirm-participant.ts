@@ -2,9 +2,9 @@ import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { env } from '../env'
-import { ClientError } from '../errors/client-error'
-import { prisma } from '../lib/prisma'
+import { db } from '@/database/prisma'
+import { env } from '@/env'
+import { ClientError } from '@/errors/client-error'
 
 export async function confirmParticipant(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -19,7 +19,7 @@ export async function confirmParticipant(app: FastifyInstance) {
     async (request, reply) => {
       const { participantId } = request.params
 
-      const participant = await prisma.participant.findUnique({
+      const participant = await db.participant.findUnique({
         where: { id: participantId },
       })
 
@@ -31,7 +31,7 @@ export async function confirmParticipant(app: FastifyInstance) {
         return reply.redirect(`${env.WEB_BASE_URL}/trips/${participant.trip_id}`)
       }
 
-      await prisma.participant.update({
+      await db.participant.update({
         where: { id: participantId },
         data: { is_confirmed: true },
       })
