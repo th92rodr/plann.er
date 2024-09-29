@@ -3,11 +3,11 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import nodemailer from 'nodemailer'
 import { z } from 'zod'
 
-import { env } from '../env'
-import { ClientError } from '../errors/client-error'
-import { dayjs } from '../lib/dayjs'
-import { getMailClient } from '../lib/mail'
-import { prisma } from '../lib/prisma'
+import { db } from '@/database/prisma'
+import { env } from '@/env'
+import { ClientError } from '@/errors/client-error'
+import { dayjs } from '@/lib/dayjs'
+import { getMailClient } from '@/lib/mail'
 
 export async function confirmTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -22,7 +22,7 @@ export async function confirmTrip(app: FastifyInstance) {
     async (request, reply) => {
       const { tripId } = request.params
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await db.trip.findUnique({
         where: { id: tripId },
         include: {
           participants: {
@@ -39,7 +39,7 @@ export async function confirmTrip(app: FastifyInstance) {
         return reply.redirect(`${env.WEB_BASE_URL}/trips/${tripId}`)
       }
 
-      await prisma.trip.update({
+      await db.trip.update({
         where: { id: tripId },
         data: { is_confirmed: true },
       })

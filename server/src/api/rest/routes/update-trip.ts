@@ -2,9 +2,9 @@ import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { ClientError } from '../errors/client-error'
-import { dayjs } from '../lib/dayjs'
-import { prisma } from '../lib/prisma'
+import { db } from '@/database/prisma'
+import { ClientError } from '@/errors/client-error'
+import { dayjs } from '@/lib/dayjs'
 
 export async function updateTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().put(
@@ -25,7 +25,7 @@ export async function updateTrip(app: FastifyInstance) {
       const { tripId } = request.params
       const { destination, starts_at: startsAt, ends_at: endsAt } = request.body
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await db.trip.findUnique({
         where: { id: tripId },
       })
 
@@ -41,7 +41,7 @@ export async function updateTrip(app: FastifyInstance) {
         throw new ClientError('Invalid trip end date.')
       }
 
-      await prisma.trip.update({
+      await db.trip.update({
         where: { id: tripId },
         data: { destination, starts_at: startsAt, ends_at: endsAt },
       })

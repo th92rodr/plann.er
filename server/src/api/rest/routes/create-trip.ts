@@ -3,11 +3,11 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import nodemailer from 'nodemailer'
 import { z } from 'zod'
 
-import { env } from '../env'
-import { ClientError } from '../errors/client-error'
-import { dayjs } from '../lib/dayjs'
-import { getMailClient } from '../lib/mail'
-import { prisma } from '../lib/prisma'
+import { db } from '@/database/prisma'
+import { env } from '@/env'
+import { ClientError } from '@/errors/client-error'
+import { dayjs } from '@/lib/dayjs'
+import { getMailClient } from '@/lib/mail'
 
 export async function createTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -45,7 +45,7 @@ export async function createTrip(app: FastifyInstance) {
       const firstMinOfFirstDay = dayjs(startsAt).startOf('day').toDate()
       const lastMinOfLastDay = dayjs(endsAt).endOf('day').toDate()
 
-      const trip = await prisma.trip.create({
+      const trip = await db.trip.create({
         data: {
           destination,
           starts_at: firstMinOfFirstDay,

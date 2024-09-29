@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "license": "BSD-3",
-  "main": "src/server.ts",
+  "main": "src/index.ts",
   "engines": {
     "node": "20.14.0",
     "npm": "10.7.0"
   },
   "scripts": {
-    "dev": "tsx watch --env-file .env src/server.ts",
+    "dev": "tsx watch --env-file .env src/index.ts",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"
   },
