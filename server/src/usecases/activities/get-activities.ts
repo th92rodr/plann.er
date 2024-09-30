@@ -7,7 +7,7 @@ interface IRequest {
 }
 
 interface IResponse {
-  activities: {
+  tripActivities: {
     date: Date
     activities: {
       id: string
@@ -34,7 +34,7 @@ export const getActivitiesUsecase = async ({ tripId }: IRequest): Promise<IRespo
 
   const tripLengthInDays = dayjs(trip.endsAt).diff(trip.startsAt, 'days')
 
-  const activities = Array.from({ length: tripLengthInDays + 1 }).map((_, index) => {
+  const tripActivities = Array.from({ length: tripLengthInDays + 1 }).map((_, index) => {
     const date = dayjs(trip.startsAt).add(index, 'days')
     return {
       date: date.toDate(),
@@ -44,5 +44,5 @@ export const getActivitiesUsecase = async ({ tripId }: IRequest): Promise<IRespo
     }
   })
 
-  return { activities }
+  return { tripActivities }
 }
