@@ -21,15 +21,7 @@ export const tripsRoutes: FastifyPluginAsyncZod = async app => {
 
       const trip = await getTripDetailsUsecase({ tripId })
 
-      return {
-        trip: {
-          id: trip.id,
-          destination: trip.destination,
-          starts_at: trip.startsAt,
-          ends_at: trip.endsAt,
-          is_confirmed: trip.isConfirmed,
-        },
-      }
+      return trip
     },
   })
 
@@ -56,22 +48,15 @@ export const tripsRoutes: FastifyPluginAsyncZod = async app => {
     schema: {
       body: z.object({
         destination: z.string().min(1),
-        starts_at: z.coerce.date(),
-        ends_at: z.coerce.date(),
-        owner_name: z.string(),
-        owner_email: z.string().email(),
-        emails_to_invite: z.array(z.string().email()),
+        startsAt: z.coerce.date(),
+        endsAt: z.coerce.date(),
+        ownerName: z.string(),
+        ownerEmail: z.string().email(),
+        emailsToInvite: z.array(z.string().email()),
       }),
     },
     handler: async request => {
-      const {
-        destination,
-        starts_at: startsAt,
-        ends_at: endsAt,
-        owner_name: ownerName,
-        owner_email: ownerEmail,
-        emails_to_invite: emailsToInvite,
-      } = request.body
+      const { destination, startsAt, endsAt, ownerName, ownerEmail, emailsToInvite } = request.body
 
       const { id } = await createTripUsecase({
         destination,
@@ -95,13 +80,13 @@ export const tripsRoutes: FastifyPluginAsyncZod = async app => {
       }),
       body: z.object({
         destination: z.string().min(1),
-        starts_at: z.coerce.date(),
-        ends_at: z.coerce.date(),
+        startsAt: z.coerce.date(),
+        endsAt: z.coerce.date(),
       }),
     },
     handler: async request => {
       const { tripId } = request.params
-      const { destination, starts_at: startsAt, ends_at: endsAt } = request.body
+      const { destination, startsAt, endsAt } = request.body
 
       const { id } = await updateTripUsecase({ tripId, destination, startsAt, endsAt })
 

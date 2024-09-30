@@ -31,12 +31,12 @@ export const activitiesRoutes: FastifyPluginAsyncZod = async app => {
       }),
       body: z.object({
         title: z.string().min(1),
-        occurs_at: z.coerce.date(),
+        occursAt: z.coerce.date(),
       }),
     },
     handler: async request => {
       const { tripId } = request.params
-      const { title, occurs_at: occursAt } = request.body
+      const { title, occursAt } = request.body
 
       const { id } = await createActivityUsecase({ tripId, title, occursAt })
 
