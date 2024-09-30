@@ -64,8 +64,7 @@ export const createTripUsecase = async ({
 
   const formattedStartDate = dayjs(startsAt).format('LL')
   const formattedEndDate = dayjs(endsAt).format('LL')
-
-  const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`
+  const confirmationLink = `http://${env.HOST}:${env.PORT}/trips/${trip.id}/confirm`
 
   const mail = await getMailClient()
 

@@ -46,7 +46,7 @@ export const tripsRoutes: FastifyPluginAsyncZod = async app => {
 
       const { id } = await confirmTripUsecase({ tripId })
 
-      return reply.redirect(`${env.WEB_BASE_URL}/trips/${id}`)
+      return reply.redirect(`${env.FRONTEND_URL}/trips/${id}`)
     },
   })
 
