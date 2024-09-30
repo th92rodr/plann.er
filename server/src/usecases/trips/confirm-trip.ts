@@ -1,7 +1,4 @@
-import type { FastifyInstance } from 'fastify'
-import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import nodemailer from 'nodemailer'
-import { z } from 'zod'
 
 import { db } from '@/database/prisma'
 import { env } from '@/env'
@@ -9,40 +6,45 @@ import { ClientError } from '@/errors/client-error'
 import { dayjs } from '@/lib/dayjs'
 import { getMailClient } from '@/lib/mail'
 
-export async function createInvite(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>().post(
-    '/trips/:tripId/invites',
-    {
-      schema: {
-        params: z.object({
-          tripId: z.string().uuid(),
-        }),
-        body: z.object({
-          email: z.string().email(),
-        }),
+interface IRequest {
+  tripId: string
+}
+
+interface IResponse {
+  id: string
+}
+
+export const confirmTripUsecase = async ({ tripId }: IRequest): Promise<IResponse> => {
+  const trip = await db.trip.findUnique({
+    where: { id: tripId },
+    include: {
+      participants: {
+        select: { id: true, email: true },
+        where: { isOwner: false },
       },
     },
-    async request => {
-      const { tripId } = request.params
-      const { email } = request.body
+  })
 
-      const trip = await db.trip.findUnique({
-        where: { id: tripId },
-      })
+  if (!trip) {
+    throw new ClientError('Trip not found.')
+  }
 
-      if (!trip) {
-        throw new ClientError('Trip not found.')
-      }
+  if (trip.isConfirmed) {
+    return { id: trip.id }
+  }
 
-      const participant = await db.participant.create({
-        data: { email, trip_id: tripId },
-      })
+  await db.trip.update({
+    where: { id: tripId },
+    data: { isConfirmed: true },
+  })
 
-      const formattedStartDate = dayjs(trip.starts_at).format('LL')
-      const formattedEndDate = dayjs(trip.ends_at).format('LL')
+  const formattedStartDate = dayjs(trip.startsAt).format('LL')
+  const formattedEndDate = dayjs(trip.endsAt).format('LL')
 
-      const mail = await getMailClient()
+  const mail = await getMailClient()
 
+  await Promise.all(
+    trip.participants.map(async participant => {
       const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`
 
       const message = await mail.sendMail({
@@ -68,8 +70,8 @@ export async function createInvite(app: FastifyInstance) {
       })
 
       console.log(nodemailer.getTestMessageUrl(message))
-
-      return { participant_id: participant.id }
-    }
+    })
   )
+
+  return { id: trip.id }
 }
