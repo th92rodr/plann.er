@@ -6,12 +6,10 @@ interface IRequest {
 }
 
 interface IResponse {
-  participant: {
-    id: string
-    name: string | null
-    email: string
-    isConfirmed: boolean
-  }
+  id: string
+  name: string | null
+  email: string
+  isConfirmed: boolean
 }
 
 export const getParticipantUsecase = async ({ participantId }: IRequest): Promise<IResponse> => {
@@ -24,5 +22,5 @@ export const getParticipantUsecase = async ({ participantId }: IRequest): Promis
     throw new ClientError('Participant not found.')
   }
 
-  return { participant }
+  return participant
 }

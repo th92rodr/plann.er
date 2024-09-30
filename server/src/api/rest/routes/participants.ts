@@ -19,9 +19,9 @@ export const participantsRoutes: FastifyPluginAsyncZod = async app => {
     handler: async request => {
       const { participantId } = request.params
 
-      const { participant } = await getParticipantUsecase({ participantId })
+      const participant = await getParticipantUsecase({ participantId })
 
-      return { participant }
+      return participant
     },
   })
 
