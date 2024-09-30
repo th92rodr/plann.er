@@ -45,7 +45,7 @@ export const confirmTripUsecase = async ({ tripId }: IRequest): Promise<IRespons
 
   await Promise.all(
     trip.participants.map(async participant => {
-      const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`
+      const confirmationLink = `http://${env.HOST}:${env.PORT}/participants/${participant.id}/confirm`
 
       const message = await mail.sendMail({
         from: {

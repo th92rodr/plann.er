@@ -31,10 +31,9 @@ export const createInviteUsecase = async ({ tripId, email }: IRequest): Promise<
 
   const formattedStartDate = dayjs(trip.startsAt).format('LL')
   const formattedEndDate = dayjs(trip.endsAt).format('LL')
+  const confirmationLink = `http://${env.HOST}:${env.PORT}/participants/${participant.id}/confirm`
 
   const mail = await getMailClient()
-
-  const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`
 
   const message = await mail.sendMail({
     from: {
