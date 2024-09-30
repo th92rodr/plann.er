@@ -42,12 +42,20 @@ async function main() {
         createMany: {
           data: [
             {
+              title: 'Concert',
+              occursAt: dayjs(new Date()).add(1, 'day').toDate(),
+            },
+            {
               title: 'Movies',
               occursAt: dayjs(new Date()).add(2, 'day').toDate(),
             },
             {
               title: 'Dinner',
               occursAt: dayjs(new Date()).add(4, 'day').toDate(),
+            },
+            {
+              title: 'Bowling',
+              occursAt: dayjs(new Date()).add(6, 'day').toDate(),
             },
           ],
         },
@@ -58,11 +66,11 @@ async function main() {
           data: [
             {
               title: 'Accommodation reservation',
-              url: 'accommodation.com',
+              url: 'https://www.accommodation.com',
             },
             {
               title: 'Museum tickets',
-              url: 'museum.com',
+              url: 'https://www.museum.com',
             },
           ],
         },
