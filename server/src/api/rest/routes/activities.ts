@@ -16,9 +16,9 @@ export const activitiesRoutes: FastifyPluginAsyncZod = async app => {
     handler: async request => {
       const { tripId } = request.params
 
-      const { activities } = await getActivitiesUsecase({ tripId })
+      const { tripActivities } = await getActivitiesUsecase({ tripId })
 
-      return { activities }
+      return { tripActivities }
     },
   })
 
